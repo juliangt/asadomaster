@@ -8,19 +8,21 @@ interface CardProps {
   footer?: React.ReactNode;
 }
 
+const isGlassTheme = import.meta.env.VITE_THEME === 'glass';
+
 const Card: React.FC<CardProps> = ({ title, children, className = "", footer }) => {
   return (
-    <div className={`bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden ${className}`}>
+    <div className={`bg-card text-card-foreground rounded-xl border border-border shadow-sm overflow-hidden ${className} ${isGlassTheme ? 'glass-card' : ''}`}>
       {title && (
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+        <div className="px-6 py-4 border-b border-border">
+          <h3 className="text-lg font-semibold">{title}</h3>
         </div>
       )}
       <div className="p-6">
         {children}
       </div>
       {footer && (
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
+        <div className="px-6 py-4 bg-secondary border-t border-border">
           {footer}
         </div>
       )}

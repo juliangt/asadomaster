@@ -1,6 +1,6 @@
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import SummaryCard from './components/SummaryCard';
 import SettlementsList from './components/SettlementsList';
@@ -39,8 +39,16 @@ const AsadoApp: React.FC = () => {
     setShowSuccessModal(true);
   };
 
+  const theme = import.meta.env.VITE_THEME;
+
+  useEffect(() => {
+    if (theme === 'glass') {
+      document.body.classList.add('glass-theme');
+    }
+  }, [theme]);
+
   return (
-    <div className="min-h-screen pb-12 bg-gray-50 text-gray-900">
+    <div className="min-h-screen pb-12">
       <Header activeTab={activeTab} onTabChange={setActiveTab} />
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 mt-8">

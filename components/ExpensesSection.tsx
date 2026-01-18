@@ -77,7 +77,7 @@ const ExpensesSection: React.FC<ExpensesSectionProps> = ({
                         <select
                             value={newExpense.participantId}
                             onChange={(e) => setNewExpense({ ...newExpense, participantId: e.target.value })}
-                            className="w-full px-3 py-2.5 bg-white border-2 border-gray-100 rounded-xl text-sm font-black text-gray-900 outline-none focus:border-orange-500 cursor-pointer appearance-none"
+                            className="w-full px-3 py-2.5 bg-input border-2 border-border rounded-xl text-sm font-black text-foreground outline-none focus:border-primary cursor-pointer appearance-none"
                         >
                             <option value="">{t('who_placeholder')}</option>
                             {participants
@@ -90,7 +90,7 @@ const ExpensesSection: React.FC<ExpensesSectionProps> = ({
                         </select>
                         <ChevronDown
                             size={14}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
                         />
                     </div>
 
@@ -101,29 +101,29 @@ const ExpensesSection: React.FC<ExpensesSectionProps> = ({
                             value={newExpense.description}
                             onFocus={() => setShowQuickItems(true)}
                             onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
-                            className="w-full px-4 py-2.5 bg-white border-2 border-gray-100 rounded-xl text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-orange-500 shadow-sm transition-all"
+                            className="w-full px-4 py-2.5 bg-input border-2 border-border rounded-xl text-sm font-bold text-foreground placeholder:text-muted-foreground outline-none focus:border-primary shadow-sm transition-all"
                         />
                         {showQuickItems && (
-                            <div className="absolute bottom-full mb-2 left-0 right-0 bg-white border-2 border-orange-100 rounded-2xl shadow-xl p-2 z-50 transition-all duration-200">
+                            <div className="absolute bottom-full mb-2 left-0 right-0 bg-popover border-2 border-border rounded-2xl shadow-xl p-2 z-50 transition-all duration-200">
                                 <div className="grid grid-cols-5 gap-1">
                                     {QUICK_ITEMS.map((item, index) => (
                                         <button
                                             key={index}
                                             type="button"
                                             onClick={() => handleQuickItemSelect(item)}
-                                            className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-orange-50 transition-colors group"
+                                            className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-accent transition-colors group"
                                             title={t(item.labelKey as any)}
                                         >
                                             <span className="text-xl group-hover:scale-125 transition-transform">
                                                 {item.icon}
                                             </span>
-                                            <span className="text-[9px] font-bold text-gray-400 uppercase mt-1 truncate w-full text-center">
+                                            <span className="text-[9px] font-bold text-muted-foreground uppercase mt-1 truncate w-full text-center">
                                                 {t(item.labelKey as any)}
                                             </span>
                                         </button>
                                     ))}
                                 </div>
-                                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-r-2 border-b-2 border-orange-100 rotate-45"></div>
+                                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-popover border-r-2 border-b-2 border-border rotate-45"></div>
                             </div>
                         )}
                     </div>
@@ -140,11 +140,11 @@ const ExpensesSection: React.FC<ExpensesSectionProps> = ({
                                     setNewExpense({ ...newExpense, amount: value });
                                 }
                             }}
-                            className="flex-1 min-w-0 px-3 py-2.5 bg-white border-2 border-gray-100 rounded-xl text-sm font-black text-gray-900 placeholder:text-gray-400 outline-none focus:border-orange-500 shadow-sm"
+                            className="flex-1 min-w-0 px-3 py-2.5 bg-input border-2 border-border rounded-xl text-sm font-black text-foreground placeholder:text-muted-foreground outline-none focus:border-primary shadow-sm"
                         />
                         <button
                             type="submit"
-                            className="bg-orange-600 text-white p-3 rounded-xl hover:bg-orange-700 transition-all shadow-md active:scale-95 shrink-0"
+                            className="bg-primary text-primary-foreground p-3 rounded-xl hover:bg-primary/90 transition-all shadow-md active:scale-95 shrink-0"
                         >
                             <Plus size={20} />
                         </button>
@@ -159,26 +159,26 @@ const ExpensesSection: React.FC<ExpensesSectionProps> = ({
                         return (
                             <div
                                 key={e.id}
-                                className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-gray-50 border border-gray-100 rounded-xl hover:bg-white hover:border-orange-200 transition-all shadow-sm gap-4 sm:gap-0"
+                                className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-secondary border border-border rounded-xl hover:bg-accent hover:border-primary transition-all shadow-sm gap-4 sm:gap-0"
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className="bg-orange-100 p-2.5 rounded-xl text-orange-600">
+                                    <div className="bg-accent p-2.5 rounded-xl text-primary">
                                         <Receipt size={22} />
                                     </div>
                                     <div>
-                                        <p className="text-lg font-black text-gray-900 leading-tight">{e.description}</p>
-                                        <p className="text-xs font-bold text-gray-500 uppercase tracking-tighter">
+                                        <p className="text-lg font-black leading-tight">{e.description}</p>
+                                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-tighter">
                                             {t('paid_by')} {payer?.name || '?'}
                                         </p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4">
-                                    <span className="font-black text-xl text-gray-900 whitespace-nowrap">
+                                    <span className="font-black text-xl whitespace-nowrap">
                                         {formatCurrency(e.amount)}
                                     </span>
                                     <button
                                         onClick={() => onRemoveExpense(e.id)}
-                                        className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                                        className="p-2 text-muted-foreground hover:text-destructive transition-colors"
                                     >
                                         <Trash2 size={20} />
                                     </button>
@@ -187,7 +187,7 @@ const ExpensesSection: React.FC<ExpensesSectionProps> = ({
                         );
                     })
                 ) : (
-                    <div className="flex flex-col items-center justify-center py-6 text-gray-300">
+                    <div className="flex flex-col items-center justify-center py-6 text-muted-foreground/50">
                         <Receipt size={32} strokeWidth={1} className="mb-2 opacity-50" />
                         <p className="text-xs font-bold uppercase tracking-widest">{t('register_purchases')}</p>
                     </div>

@@ -32,23 +32,23 @@ const SettlementsList: React.FC<SettlementsListProps> = ({
                         return (
                             <div
                                 key={idx}
-                                className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100 shadow-inner"
+                        className="flex items-center justify-between p-4 bg-secondary text-secondary-foreground rounded-xl border border-border shadow-inner"
                             >
                                 <div className="flex flex-col">
-                                    <span className="font-black text-lg text-gray-900 leading-none mb-1">{from?.name}</span>
-                                    <span className="text-[10px] text-gray-500 font-black uppercase tracking-tighter">{t('must_pay_to')}</span>
+                            <span className="font-black text-lg leading-none mb-1">{from?.name}</span>
+                            <span className="text-[10px] text-muted-foreground font-black uppercase tracking-tighter">{t('must_pay_to')}</span>
                                 </div>
                                 <div className="flex flex-col items-center px-2">
-                                    <div className="bg-white p-1 rounded-full shadow-sm border border-gray-100">
-                                        <ChevronRight size={18} className="text-orange-600" />
+                            <div className="bg-card p-1 rounded-full shadow-sm border border-border">
+                                <ChevronRight size={18} className="text-primary" />
                                     </div>
-                                    <span className="text-sm font-black text-orange-600 mt-1 whitespace-nowrap">
+                            <span className="text-sm font-black text-primary mt-1 whitespace-nowrap">
                                         {formatCurrency(t_item.amount)}
                                     </span>
                                 </div>
                                 <div className="flex flex-col items-end text-right">
-                                    <span className="font-black text-lg text-gray-900 leading-none mb-1">{to?.name}</span>
-                                    <span className="text-[10px] text-gray-500 font-black uppercase tracking-tighter">{t('receives')}</span>
+                            <span className="font-black text-lg leading-none mb-1">{to?.name}</span>
+                            <span className="text-[10px] text-muted-foreground font-black uppercase tracking-tighter">{t('receives')}</span>
                                 </div>
                             </div>
                         );
@@ -56,13 +56,13 @@ const SettlementsList: React.FC<SettlementsListProps> = ({
                 </div>
             ) : (
                 <div className="text-center py-8">
-                    <p className="text-sm text-gray-400 font-bold uppercase tracking-widest">{t('no_debts')}</p>
+            <p className="text-sm text-muted font-bold uppercase tracking-widest">{t('no_debts')}</p>
                 </div>
             )}
             <button
                 onClick={onSaveToHistory}
                 disabled={totalCost === 0}
-                className="w-full mt-6 flex items-center justify-center gap-2 bg-gray-900 text-white py-4 rounded-xl text-sm font-black uppercase tracking-widest hover:bg-black transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg active:scale-[0.98]"
+        className="w-full mt-6 flex items-center justify-center gap-2 bg-primary text-primary-foreground py-4 rounded-xl text-sm font-black uppercase tracking-widest hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg active:scale-[0.98]"
             >
                 <TrendingUp size={18} />
                 {t('finish_asado')}
