@@ -1,19 +1,20 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Plus, 
+import {
+  Plus,
   Minus,
-  Users, 
-  Receipt, 
-  Trash2, 
-  CheckCircle2, 
-  Circle, 
-  Flame, 
-  TrendingUp, 
+  Users,
+  Receipt,
+  Trash2,
+  CheckCircle2,
+  Circle,
+  Flame,
+  TrendingUp,
   History,
   Calculator,
   ChevronRight,
-  UserPlus
+  UserPlus,
+  ChevronDown
 } from 'lucide-react';
 import { Participant, Expense, AsadoHistory } from './types';
 import { calculateBalances, settleDebts } from './utils/calculations';
@@ -38,6 +39,7 @@ const App: React.FC = () => {
   const [newParticipant, setNewParticipant] = useState({ name: '', memberCount: 1 });
   const [newExpense, setNewExpense] = useState({ participantId: '', description: '', amount: '' });
   const [activeTab, setActiveTab] = useState<'current' | 'history'>('current');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Persistence
   useEffect(() => {
@@ -47,8 +49,8 @@ const App: React.FC = () => {
   }, [participants, expenses, history]);
 
   // Derived calculations
-  const { balances, totalCost, costPerPerson } = useMemo(() => 
-    calculateBalances(participants, expenses), 
+  const { balances, totalCost, costPerPerson } = useMemo(() =>
+    calculateBalances(participants, expenses),
     [participants, expenses]
   );
 
@@ -60,13 +62,13 @@ const App: React.FC = () => {
   const addParticipant = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newParticipant.name.trim()) return;
-    
+
     const id = crypto.randomUUID();
-    setParticipants([...participants, { 
-      id, 
-      name: newParticipant.name, 
-      memberCount: newParticipant.memberCount, 
-      isConfirmed: true 
+    setParticipants([...participants, {
+      id,
+      name: newParticipant.name,
+      memberCount: newParticipant.memberCount,
+      isConfirmed: true
     }]);
     setNewParticipant({ name: '', memberCount: 1 });
   };
@@ -77,7 +79,7 @@ const App: React.FC = () => {
   };
 
   const toggleConfirm = (id: string) => {
-    setParticipants(participants.map(p => 
+    setParticipants(participants.map(p =>
       p.id === id ? { ...p, isConfirmed: !p.isConfirmed } : p
     ));
   };
@@ -85,14 +87,14 @@ const App: React.FC = () => {
   const addExpense = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newExpense.participantId || !newExpense.description || !newExpense.amount) return;
-    
+
     setExpenses([...expenses, {
       id: crypto.randomUUID(),
       participantId: newExpense.participantId,
       description: newExpense.description,
       amount: parseFloat(newExpense.amount)
     }]);
-    setNewExpense({ ...newExpense, description: '', amount: '' });
+    setNewExpense({ participantId: '', description: '', amount: '' });
   };
 
   const removeExpense = (id: string) => {
@@ -106,11 +108,12 @@ const App: React.FC = () => {
       date: new Date().toLocaleDateString(),
       totalCost,
       participantsCount: totalHeads,
-      description: `Asado con ${totalHeads} personas`
+      description: `Asado con ${totalHeads} personas`,
+      participants: participants.filter(p => p.isConfirmed)
     };
     setHistory([item, ...history]);
     setExpenses([]);
-    alert("¡Asado guardado en el historial!");
+    setShowSuccessModal(true);
   };
 
   const formatCurrency = (val: number) => {
@@ -131,14 +134,14 @@ const App: React.FC = () => {
             </h1>
           </div>
           <nav className="flex gap-2">
-            <button 
+            <button
               onClick={() => setActiveTab('current')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'current' ? 'bg-orange-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
             >
               <Calculator size={16} />
               Actual
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('history')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'history' ? 'bg-orange-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
             >
@@ -152,7 +155,7 @@ const App: React.FC = () => {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 mt-8">
         {activeTab === 'current' ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
+
             {/* Sidebar: Summary & Settlements */}
             <div className="lg:col-span-4 space-y-6">
               <Card className="bg-gradient-to-br from-orange-600 to-red-600 border-none text-white shadow-xl">
@@ -205,7 +208,7 @@ const App: React.FC = () => {
                     <p className="text-sm text-gray-400 font-bold uppercase tracking-widest">Sin deudas</p>
                   </div>
                 )}
-                <button 
+                <button
                   onClick={saveToHistory}
                   disabled={totalCost === 0}
                   className="w-full mt-6 flex items-center justify-center gap-2 bg-gray-900 text-white py-4 rounded-xl text-sm font-black uppercase tracking-widest hover:bg-black transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg active:scale-[0.98]"
@@ -218,43 +221,124 @@ const App: React.FC = () => {
 
             {/* Main Content: Participants & Expenses */}
             <div className="lg:col-span-8 space-y-6">
-              
+
+              <Card
+                title="Compras"
+                className="shadow-sm"
+                footer={
+                  <form onSubmit={addExpense} className="flex flex-col sm:flex-row gap-2">
+                    <div className="sm:w-32 shrink-0 relative">
+                      <select
+                        value={newExpense.participantId}
+                        onChange={(e) => setNewExpense({ ...newExpense, participantId: e.target.value })}
+                        className="w-full px-3 py-2.5 bg-white border-2 border-gray-100 rounded-xl text-sm font-black text-gray-900 outline-none focus:border-orange-500 cursor-pointer appearance-none"
+                      >
+                        <option value="">¿Quién?</option>
+                        {participants.filter(p => p.isConfirmed).map(p => (
+                          <option key={p.id} value={p.id}>{p.name}</option>
+                        ))}
+                      </select>
+                      <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                    </div>
+
+                    <input
+                      type="text"
+                      placeholder="¿Qué compró?"
+                      value={newExpense.description}
+                      onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
+                      className="flex-1 min-w-0 px-4 py-2.5 bg-white border-2 border-gray-100 rounded-xl text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-orange-500 shadow-sm"
+                    />
+
+                    <div className="sm:w-44 shrink-0 flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Importe"
+                        value={newExpense.amount}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (/^\d*$/.test(value) || value === '') {
+                            setNewExpense({ ...newExpense, amount: value });
+                          }
+                        }}
+                        className="flex-1 min-w-0 px-3 py-2.5 bg-white border-2 border-gray-100 rounded-xl text-sm font-black text-gray-900 placeholder:text-gray-400 outline-none focus:border-orange-500 shadow-sm"
+                      />
+                      <button type="submit" className="bg-gray-800 text-white p-3 rounded-xl hover:bg-black transition-all shadow-md active:scale-95 shrink-0">
+                        <Plus size={20} />
+                      </button>
+                    </div>
+                  </form>
+                }
+              >
+                <div className="space-y-3">
+                  {expenses.length > 0 ? expenses.map(e => {
+                    const payer = participants.find(p => p.id === e.participantId);
+                    return (
+                      <div key={e.id} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-100 rounded-xl hover:bg-white hover:border-orange-200 transition-all shadow-sm">
+                        <div className="flex items-center gap-4">
+                          <div className="bg-orange-100 p-2.5 rounded-xl text-orange-600">
+                            <Receipt size={22} />
+                          </div>
+                          <div>
+                            <p className="text-lg font-black text-gray-900 leading-tight">{e.description}</p>
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-tighter">Pagado por {payer?.name || '?'}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <span className="font-black text-xl text-gray-900 whitespace-nowrap">{formatCurrency(e.amount)}</span>
+                          <button
+                            onClick={() => removeExpense(e.id)}
+                            className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                          >
+                            <Trash2 size={20} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  }) : (
+                    <div className="flex flex-col items-center justify-center py-16 text-gray-300">
+                      <Receipt size={64} strokeWidth={1} className="mb-4 opacity-50" />
+                      <p className="text-base font-bold uppercase tracking-widest">Registra compras</p>
+                    </div>
+                  )}
+                </div>
+              </Card>
+
               {/* Participants Section */}
-              <Card 
-                title="Participantes" 
+              <Card
+                title="Participantes"
                 className="shadow-sm"
                 footer={
                   <form onSubmit={addParticipant} className="flex flex-col sm:flex-row gap-3">
                     <div className="flex-1 relative">
                       <UserPlus className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                      <input 
-                        type="text" 
-                        placeholder="Nombre o Familia" 
+                      <input
+                        type="text"
+                        placeholder="Nombre o Familia"
                         value={newParticipant.name}
-                        onChange={(e) => setNewParticipant({...newParticipant, name: e.target.value})}
+                        onChange={(e) => setNewParticipant({ ...newParticipant, name: e.target.value })}
                         className="w-full pl-10 pr-4 py-2.5 bg-white border-2 border-gray-100 rounded-xl text-sm font-bold text-gray-900 placeholder:text-gray-400 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all shadow-sm"
                       />
                     </div>
                     {/* Stepper para Integrantes */}
                     <div className="flex items-center gap-1 px-1 bg-gray-100 rounded-xl border border-gray-200">
-                       <button 
+                      <button
                         type="button"
-                        onClick={() => setNewParticipant(prev => ({...prev, memberCount: Math.max(1, prev.memberCount - 1)}))}
+                        onClick={() => setNewParticipant(prev => ({ ...prev, memberCount: Math.max(1, prev.memberCount - 1) }))}
                         className="p-2 text-gray-500 hover:text-orange-600 transition-colors"
-                       >
-                         <Minus size={18} />
-                       </button>
-                       <div className="flex flex-col items-center min-w-[40px] px-1">
-                         <span className="text-[9px] font-black text-gray-400 uppercase leading-none">Pax</span>
-                         <span className="text-sm font-black text-gray-900 leading-tight">{newParticipant.memberCount}</span>
-                       </div>
-                       <button 
+                      >
+                        <Minus size={18} />
+                      </button>
+                      <div className="flex flex-col items-center min-w-[40px] px-1">
+                        <span className="text-[9px] font-black text-gray-400 uppercase leading-none">Pax</span>
+                        <span className="text-sm font-black text-gray-900 leading-tight">{newParticipant.memberCount}</span>
+                      </div>
+                      <button
                         type="button"
-                        onClick={() => setNewParticipant(prev => ({...prev, memberCount: prev.memberCount + 1}))}
+                        onClick={() => setNewParticipant(prev => ({ ...prev, memberCount: prev.memberCount + 1 }))}
                         className="p-2 text-gray-500 hover:text-orange-600 transition-colors"
-                       >
-                         <Plus size={18} />
-                       </button>
+                      >
+                        <Plus size={18} />
+                      </button>
                     </div>
                     <button type="submit" className="bg-orange-600 text-white px-6 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-orange-700 transition-all shadow-md active:scale-95">
                       <Plus size={18} />
@@ -263,11 +347,11 @@ const App: React.FC = () => {
                   </form>
                 }
               >
-                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
+                <div className="space-y-3">
                   {participants.length > 0 ? participants.map(p => (
                     <div key={p.id} className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:border-orange-300 transition-all group shadow-sm">
                       <div className="flex items-center gap-4">
-                        <button 
+                        <button
                           onClick={() => toggleConfirm(p.id)}
                           className={`transition-all transform hover:scale-110 ${p.isConfirmed ? 'text-green-500' : 'text-gray-300'}`}
                         >
@@ -287,11 +371,11 @@ const App: React.FC = () => {
                           <p className="text-sm font-black text-gray-900">
                             {formatCurrency(balances.find(b => b.participantId === p.id)?.paid || 0)}
                           </p>
-                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Invertido</p>
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Pagado</p>
                         </div>
-                        <button 
+                        <button
                           onClick={() => removeParticipant(p.id)}
-                          className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                          className="p-2 text-gray-400 hover:text-red-500 transition-colors"
                         >
                           <Trash2 size={20} />
                         </button>
@@ -306,78 +390,6 @@ const App: React.FC = () => {
                 </div>
               </Card>
 
-              {/* Expenses Section */}
-              <Card 
-                title="Gastos / Compras" 
-                className="shadow-sm"
-                footer={
-                  <form onSubmit={addExpense} className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                    <select 
-                      value={newExpense.participantId}
-                      onChange={(e) => setNewExpense({...newExpense, participantId: e.target.value})}
-                      className="sm:col-span-3 px-3 py-2.5 bg-white border-2 border-gray-100 rounded-xl text-sm font-black text-gray-900 outline-none focus:border-orange-500"
-                    >
-                      <option value="">¿Quién?</option>
-                      {participants.filter(p => p.isConfirmed).map(p => (
-                        <option key={p.id} value={p.id} className="text-gray-900 font-bold">{p.name}</option>
-                      ))}
-                    </select>
-                    <input 
-                      type="text" 
-                      placeholder="¿Qué compró?" 
-                      value={newExpense.description}
-                      onChange={(e) => setNewExpense({...newExpense, description: e.target.value})}
-                      className="sm:col-span-6 px-4 py-2.5 bg-white border-2 border-gray-100 rounded-xl text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-orange-500 shadow-sm"
-                    />
-                    <div className="sm:col-span-3 flex gap-2">
-                      <input 
-                        type="number" 
-                        placeholder="$" 
-                        value={newExpense.amount}
-                        onChange={(e) => setNewExpense({...newExpense, amount: e.target.value})}
-                        className="w-full px-3 py-2.5 bg-white border-2 border-gray-100 rounded-xl text-sm font-black text-gray-900 placeholder:text-gray-400 outline-none focus:border-orange-500 shadow-sm"
-                      />
-                      <button type="submit" className="bg-gray-800 text-white p-3 rounded-xl hover:bg-black transition-all shadow-md active:scale-95">
-                        <Plus size={20} />
-                      </button>
-                    </div>
-                  </form>
-                }
-              >
-                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
-                  {expenses.length > 0 ? expenses.map(e => {
-                    const payer = participants.find(p => p.id === e.participantId);
-                    return (
-                      <div key={e.id} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-100 rounded-xl hover:bg-white hover:border-orange-200 transition-all shadow-sm">
-                        <div className="flex items-center gap-4">
-                          <div className="bg-orange-100 p-2.5 rounded-xl text-orange-600">
-                            <Receipt size={22} />
-                          </div>
-                          <div>
-                            <p className="text-lg font-black text-gray-900 leading-tight">{e.description}</p>
-                            <p className="text-xs font-bold text-gray-500 uppercase tracking-tighter">Pagado por {payer?.name || '?'}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <span className="font-black text-xl text-gray-900 whitespace-nowrap">{formatCurrency(e.amount)}</span>
-                          <button 
-                            onClick={() => removeExpense(e.id)}
-                            className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                          >
-                            <Trash2 size={20} />
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  }) : (
-                    <div className="flex flex-col items-center justify-center py-16 text-gray-300">
-                      <Receipt size={64} strokeWidth={1} className="mb-4 opacity-50" />
-                      <p className="text-base font-bold uppercase tracking-widest">Registra compras</p>
-                    </div>
-                  )}
-                </div>
-              </Card>
-
             </div>
           </div>
         ) : (
@@ -385,7 +397,7 @@ const App: React.FC = () => {
           <div className="space-y-6 max-w-3xl mx-auto">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-3xl font-black text-gray-900 tracking-tight">Historial de Asados</h2>
-              <button 
+              <button
                 onClick={() => {
                   if (confirm("¿Estás seguro de borrar todo el historial?")) setHistory([]);
                 }}
@@ -394,56 +406,103 @@ const App: React.FC = () => {
                 BORRAR TODO
               </button>
             </div>
-            
+
             {history.length > 0 ? history.map(h => (
-              <div key={h.id} className="bg-white p-6 rounded-2xl border border-gray-200 flex items-center justify-between hover:shadow-lg transition-all transform hover:-translate-y-1">
-                <div className="flex items-center gap-5">
-                  <div className="bg-gray-100 p-4 rounded-2xl text-gray-500">
-                    <Flame size={32} />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-black text-gray-900 leading-none mb-2">{h.description}</p>
-                    <div className="flex gap-2">
-                      <span className="text-[11px] font-black text-gray-400 bg-gray-50 px-2 py-1 rounded-md uppercase border border-gray-100">{h.date}</span>
-                      <span className="text-[11px] font-black text-orange-600 bg-orange-50 px-2 py-1 rounded-md uppercase border border-orange-100">{h.participantsCount} personas</span>
+              <div key={h.id} className="bg-white p-6 rounded-2xl border border-gray-200 hover:shadow-lg transition-all transform hover:-translate-y-1">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-5">
+                    <div className="bg-orange-50 p-4 rounded-2xl text-orange-600">
+                      <Flame size={32} />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-black text-gray-900 leading-none mb-2">{h.description}</p>
+                      <div className="flex gap-2">
+                        <span className="text-[11px] font-black text-gray-400 bg-gray-50 px-2 py-1 rounded-md uppercase border border-gray-100">{h.date}</span>
+                        <span className="text-[11px] font-black text-orange-600 bg-orange-50 px-2 py-1 rounded-md uppercase border border-orange-100">{h.participantsCount} personas</span>
+                      </div>
                     </div>
                   </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-black text-orange-600 tracking-tighter">{formatCurrency(h.totalCost)}</p>
+                    <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Total Gasto</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-2xl font-black text-orange-600 tracking-tighter">{formatCurrency(h.totalCost)}</p>
-                  <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Total</p>
-                </div>
+
+                {h.participants && h.participants.length > 0 && (
+                  <div className="pt-4 border-t border-gray-100">
+                    <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-2">Participantes</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {h.participants.map(p => (
+                        <span key={p.id} className="text-[11px] font-bold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full border border-gray-200">
+                          {p.name} {p.memberCount > 1 ? `(${p.memberCount})` : ''}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )) : (
               <div className="text-center py-24 bg-white rounded-3xl border-2 border-dashed border-gray-200">
                 <History size={64} className="mx-auto text-gray-200 mb-6" />
-                <p className="text-gray-400 font-bold text-lg">No hay registros.</p>
+                <p className="text-gray-400 font-bold text-lg"> No hay registros.</p>
               </div>
             )}
           </div>
         )}
       </main>
 
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl transform animate-in zoom-in-95 duration-300 text-center">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 size={48} className="text-green-600" />
+            </div>
+            <h3 className="text-2xl font-black text-gray-900 mb-2">¡Misión Cumplida!</h3>
+            <p className="text-gray-500 font-medium mb-8">El asado ha sido guardado exitosamente en tu historial.</p>
+            <button
+              onClick={() => {
+                setShowSuccessModal(false);
+                setActiveTab('history');
+              }}
+              className="w-full bg-orange-600 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-orange-700 transition-all shadow-lg active:scale-95"
+            >
+              Ver Historial
+            </button>
+          </div>
+        </div>
+      )}
+
       <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #e2e8f0;
-          border-radius: 20px;
-          border: 2px solid transparent;
-          background-clip: content-box;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #cbd5e1;
-          background-clip: content-box;
-        }
         input::placeholder, select::placeholder {
           color: #9ca3af !important;
           opacity: 1;
+        }
+        /* Remove number input arrows */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes zoom-in-95 {
+          from { transform: scale(0.95); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+        .animate-in {
+          animation-fill-mode: forwards;
+        }
+        .fade-in {
+          animation-name: fade-in;
+        }
+        .zoom-in-95 {
+          animation-name: zoom-in-95;
         }
       `}</style>
     </div>

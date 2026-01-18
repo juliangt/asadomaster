@@ -25,6 +25,7 @@ export interface AsadoHistory {
   totalCost: number;
   participantsCount: number;
   description: string;
+  participants?: Participant[];
 }
 
 export interface BalanceSheet {
