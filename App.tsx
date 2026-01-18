@@ -46,8 +46,29 @@ const AsadoApp: React.FC = () => {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 mt-8">
         {activeTab === 'current' ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Sidebar: Summary & Settlements */}
-            <div className="lg:col-span-4 space-y-6">
+            {/* Main Content: Participants & Expenses (Top on mobile, Right on desktop) */}
+            <div className="lg:col-span-8 space-y-6 order-1 lg:order-2">
+              <ParticipantsSection
+                participants={participants}
+                balances={balances}
+                onAddParticipant={({ name, memberCount }) => addParticipant(name, memberCount)}
+                onRemoveParticipant={removeParticipant}
+                onToggleConfirm={toggleConfirm}
+                formatCurrency={formatCurrency}
+              />
+              <ExpensesSection
+                expenses={expenses}
+                participants={participants}
+                onAddExpense={({ participantId, description, amount }) =>
+                  addExpense(participantId, description, parseFloat(amount))
+                }
+                onRemoveExpense={removeExpense}
+                formatCurrency={formatCurrency}
+              />
+            </div>
+
+            {/* Sidebar: Summary & Settlements (Bottom on mobile, Left on desktop) */}
+            <div className="lg:col-span-4 space-y-6 order-2 lg:order-1">
               <SummaryCard
                 totalCost={totalCost}
                 costPerPerson={costPerPerson}
@@ -59,27 +80,6 @@ const AsadoApp: React.FC = () => {
                 participants={participants}
                 totalCost={totalCost}
                 onSaveToHistory={handleSaveToHistory}
-                formatCurrency={formatCurrency}
-              />
-            </div>
-
-            {/* Main Content: Participants & Expenses */}
-            <div className="lg:col-span-8 space-y-6">
-              <ExpensesSection
-                expenses={expenses}
-                participants={participants}
-                onAddExpense={({ participantId, description, amount }) =>
-                  addExpense(participantId, description, parseFloat(amount))
-                }
-                onRemoveExpense={removeExpense}
-                formatCurrency={formatCurrency}
-              />
-              <ParticipantsSection
-                participants={participants}
-                balances={balances}
-                onAddParticipant={({ name, memberCount }) => addParticipant(name, memberCount)}
-                onRemoveParticipant={removeParticipant}
-                onToggleConfirm={toggleConfirm}
                 formatCurrency={formatCurrency}
               />
             </div>

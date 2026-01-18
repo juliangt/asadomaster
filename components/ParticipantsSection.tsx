@@ -37,42 +37,42 @@ const ParticipantsSection: React.FC<ParticipantsSectionProps> = ({
             title={t('participants_title')}
             className="shadow-sm"
             footer={
-                <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+                <form onSubmit={handleSubmit} className="flex flex-row gap-2">
                     <div className="flex-1 relative">
-                        <UserPlus className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <UserPlus className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                         <input
                             type="text"
                             placeholder={t('name_placeholder')}
                             value={newParticipant.name}
                             onChange={(e) => setNewParticipant({ ...newParticipant, name: e.target.value })}
-                            className="w-full pl-10 pr-4 py-2.5 bg-white border-2 border-gray-100 rounded-xl text-sm font-bold text-gray-900 placeholder:text-gray-400 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all shadow-sm"
+                            className="w-full pl-8 sm:pl-10 pr-2 sm:pr-4 py-2 bg-white border-2 border-gray-100 rounded-xl text-sm font-bold text-gray-900 placeholder:text-gray-400 focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all shadow-sm"
                         />
                     </div>
-                    <div className="flex items-center gap-1 px-1 bg-gray-100 rounded-xl border border-gray-200">
+                    <div className="flex items-center gap-0.5 px-0.5 bg-gray-100 rounded-xl border border-gray-200 shrink-0">
                         <button
                             type="button"
                             onClick={() => setNewParticipant((prev) => ({ ...prev, memberCount: Math.max(1, prev.memberCount - 1) }))}
-                            className="p-2 text-gray-500 hover:text-orange-600 transition-colors"
+                            className="p-1 sm:p-2 text-gray-500 hover:text-orange-600 transition-colors"
                         >
-                            <Minus size={18} />
+                            <Minus size={16} />
                         </button>
-                        <div className="flex flex-col items-center min-w-[40px] px-1">
-                            <span className="text-[9px] font-black text-gray-400 uppercase leading-none">{t('pax_label')}</span>
-                            <span className="text-sm font-black text-gray-900 leading-tight">{newParticipant.memberCount}</span>
+                        <div className="flex flex-col items-center min-w-[32px] sm:min-w-[40px] px-0.5">
+                            <span className="text-[8px] sm:text-[9px] font-black text-gray-400 uppercase leading-none">{t('pax_label')}</span>
+                            <span className="text-xs sm:text-sm font-black text-gray-900 leading-tight">{newParticipant.memberCount}</span>
                         </div>
                         <button
                             type="button"
                             onClick={() => setNewParticipant((prev) => ({ ...prev, memberCount: prev.memberCount + 1 }))}
-                            className="p-2 text-gray-500 hover:text-orange-600 transition-colors"
+                            className="p-1 sm:p-2 text-gray-500 hover:text-orange-600 transition-colors"
                         >
-                            <Plus size={18} />
+                            <Plus size={16} />
                         </button>
                     </div>
                     <button
                         type="submit"
-                        className="bg-orange-600 text-white p-3 rounded-xl hover:bg-orange-700 transition-all shadow-md active:scale-95 flex items-center justify-center shrink-0"
+                        className="bg-orange-600 text-white p-2.5 sm:p-3 rounded-xl hover:bg-orange-700 transition-all shadow-md active:scale-95 flex items-center justify-center shrink-0"
                     >
-                        <Plus size={20} />
+                        <Plus size={18} />
                     </button>
                 </form>
             }
@@ -82,7 +82,7 @@ const ParticipantsSection: React.FC<ParticipantsSectionProps> = ({
                     participants.map((p) => (
                         <div
                             key={p.id}
-                            className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:border-orange-300 transition-all group shadow-sm gap-4 sm:gap-0"
+                            className="flex flex-row items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:border-orange-300 transition-all group shadow-sm gap-4"
                         >
                             <div className="flex items-center gap-4">
                                 <button
