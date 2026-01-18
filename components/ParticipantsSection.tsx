@@ -82,7 +82,7 @@ const ParticipantsSection: React.FC<ParticipantsSectionProps> = ({
                     participants.map((p) => (
                         <div
                             key={p.id}
-                            className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:border-orange-300 transition-all group shadow-sm"
+                            className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:border-orange-300 transition-all group shadow-sm gap-4 sm:gap-0"
                         >
                             <div className="flex items-center gap-4">
                                 <button

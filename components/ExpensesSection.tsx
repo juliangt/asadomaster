@@ -159,7 +159,7 @@ const ExpensesSection: React.FC<ExpensesSectionProps> = ({
                         return (
                             <div
                                 key={e.id}
-                                className="flex items-center justify-between p-4 bg-gray-50 border border-gray-100 rounded-xl hover:bg-white hover:border-orange-200 transition-all shadow-sm"
+                                className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-gray-50 border border-gray-100 rounded-xl hover:bg-white hover:border-orange-200 transition-all shadow-sm gap-4 sm:gap-0"
                             >
                                 <div className="flex items-center gap-4">
                                     <div className="bg-orange-100 p-2.5 rounded-xl text-orange-600">
