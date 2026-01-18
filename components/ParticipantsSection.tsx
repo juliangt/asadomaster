@@ -119,9 +119,9 @@ const ParticipantsSection: React.FC<ParticipantsSectionProps> = ({
                         </div>
                     ))
                 ) : (
-                    <div className="flex flex-col items-center justify-center py-16 text-gray-300">
-                        <Users size={64} strokeWidth={1} className="mb-4 opacity-50" />
-                        <p className="text-base font-bold uppercase tracking-widest">{t('load_friends')}</p>
+                    <div className="flex flex-col items-center justify-center py-6 text-gray-300">
+                        <Users size={32} strokeWidth={1} className="mb-2 opacity-50" />
+                        <p className="text-xs font-bold uppercase tracking-widest">{t('load_friends')}</p>
                     </div>
                 )}
             </div>

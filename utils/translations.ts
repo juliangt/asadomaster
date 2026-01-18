@@ -44,8 +44,17 @@ export const translations = {
         view_history_btn: 'Ver Historial',
         // Modals/Confirms
         delete_all_confirm: '¿Estás seguro de borrar todo el historial?',
-        // Generic
-        asado: 'Asado',
+        // Quick Items
+        item_meat: 'Carne',
+        item_bread: 'Pan',
+        item_veggies: 'Verduras',
+        item_oil: 'Condimentos',
+        item_soda: 'Gaseosa',
+        item_water: 'Agua',
+        item_pastries: 'Facturas',
+        item_salami: 'Salames',
+        item_cheese: 'Quesos',
+        item_other: 'Otro',
     },
     en: {
         // Header
@@ -89,8 +98,17 @@ export const translations = {
         view_history_btn: 'View History',
         // Modals/Confirms
         delete_all_confirm: 'Are you sure you want to clear the entire history?',
-        // Generic
-        asado: 'BBQ',
+        // Quick Items
+        item_meat: 'Meat',
+        item_bread: 'Bread',
+        item_veggies: 'Veggies',
+        item_oil: 'Oil',
+        item_soda: 'Soda',
+        item_water: 'Water',
+        item_pastries: 'Pastries',
+        item_salami: 'Salami',
+        item_cheese: 'Cheese',
+        item_other: 'Other',
     },
 };
 

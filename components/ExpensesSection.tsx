@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Plus, Receipt, Trash2, ChevronDown } from 'lucide-react';
 import Card from './Card';
 import { Expense, Participant } from '../types';
@@ -13,6 +13,19 @@ interface ExpensesSectionProps {
     formatCurrency: (val: number) => string;
 }
 
+const QUICK_ITEMS = [
+    { icon: '🥩', labelKey: 'item_meat' },
+    { icon: '🥖', labelKey: 'item_bread' },
+    { icon: '🥗', labelKey: 'item_veggies' },
+    { icon: '🏺', labelKey: 'item_oil' },
+    { icon: '🥤', labelKey: 'item_soda' },
+    { icon: '💧', labelKey: 'item_water' },
+    { icon: '🥐', labelKey: 'item_pastries' },
+    { icon: '🍖', labelKey: 'item_salami' },
+    { icon: '🧀', labelKey: 'item_cheese' },
+    { icon: '❓', labelKey: 'item_other' },
+] as const;
+
 const ExpensesSection: React.FC<ExpensesSectionProps> = ({
     expenses,
     participants,
@@ -22,6 +35,30 @@ const ExpensesSection: React.FC<ExpensesSectionProps> = ({
 }) => {
     const { t } = useLanguage();
     const [newExpense, setNewExpense] = useState({ participantId: '', description: '', amount: '' });
+    const [showQuickItems, setShowQuickItems] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const amountInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+                setShowQuickItems(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleQuickItemSelect = (item: (typeof QUICK_ITEMS)[number]) => {
+        if (item.icon === '❓') {
+            setShowQuickItems(false);
+            return;
+        }
+        setNewExpense({ ...newExpense, description: t(item.labelKey as any) });
+        setShowQuickItems(false);
+        // Focus amount input after selection
+        setTimeout(() => amountInputRef.current?.focus(), 0);
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -57,16 +94,43 @@ const ExpensesSection: React.FC<ExpensesSectionProps> = ({
                         />
                     </div>
 
-                    <input
-                        type="text"
-                        placeholder={t('what_bought_placeholder')}
-                        value={newExpense.description}
-                        onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
-                        className="flex-1 min-w-0 px-4 py-2.5 bg-white border-2 border-gray-100 rounded-xl text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-orange-500 shadow-sm"
-                    />
+                    <div className="flex-1 min-w-0 relative" ref={containerRef}>
+                        <input
+                            type="text"
+                            placeholder={t('what_bought_placeholder')}
+                            value={newExpense.description}
+                            onFocus={() => setShowQuickItems(true)}
+                            onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
+                            className="w-full px-4 py-2.5 bg-white border-2 border-gray-100 rounded-xl text-sm font-bold text-gray-900 placeholder:text-gray-400 outline-none focus:border-orange-500 shadow-sm transition-all"
+                        />
+                        {showQuickItems && (
+                            <div className="absolute bottom-full mb-2 left-0 right-0 bg-white border-2 border-orange-100 rounded-2xl shadow-xl p-2 z-50 transition-all duration-200">
+                                <div className="grid grid-cols-5 gap-1">
+                                    {QUICK_ITEMS.map((item, index) => (
+                                        <button
+                                            key={index}
+                                            type="button"
+                                            onClick={() => handleQuickItemSelect(item)}
+                                            className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-orange-50 transition-colors group"
+                                            title={t(item.labelKey as any)}
+                                        >
+                                            <span className="text-xl group-hover:scale-125 transition-transform">
+                                                {item.icon}
+                                            </span>
+                                            <span className="text-[9px] font-bold text-gray-400 uppercase mt-1 truncate w-full text-center">
+                                                {t(item.labelKey as any)}
+                                            </span>
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-r-2 border-b-2 border-orange-100 rotate-45"></div>
+                            </div>
+                        )}
+                    </div>
 
                     <div className="sm:w-44 shrink-0 flex gap-2">
                         <input
+                            ref={amountInputRef}
                             type="text"
                             placeholder={t('amount_placeholder')}
                             value={newExpense.amount}
@@ -123,9 +187,9 @@ const ExpensesSection: React.FC<ExpensesSectionProps> = ({
                         );
                     })
                 ) : (
-                    <div className="flex flex-col items-center justify-center py-16 text-gray-300">
-                        <Receipt size={64} strokeWidth={1} className="mb-4 opacity-50" />
-                        <p className="text-base font-bold uppercase tracking-widest">{t('register_purchases')}</p>
+                    <div className="flex flex-col items-center justify-center py-6 text-gray-300">
+                        <Receipt size={32} strokeWidth={1} className="mb-2 opacity-50" />
+                        <p className="text-xs font-bold uppercase tracking-widest">{t('register_purchases')}</p>
                     </div>
                 )}
             </div>
