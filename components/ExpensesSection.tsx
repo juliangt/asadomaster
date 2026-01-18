@@ -80,7 +80,7 @@ const ExpensesSection: React.FC<ExpensesSectionProps> = ({
                         />
                         <button
                             type="submit"
-                            className="bg-gray-800 text-white p-3 rounded-xl hover:bg-black transition-all shadow-md active:scale-95 shrink-0"
+                            className="bg-orange-600 text-white p-3 rounded-xl hover:bg-orange-700 transition-all shadow-md active:scale-95 shrink-0"
                         >
                             <Plus size={20} />
                         </button>

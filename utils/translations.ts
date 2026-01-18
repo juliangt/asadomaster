@@ -56,7 +56,7 @@ export const translations = {
         per_person: 'Per Person',
         total_pax: 'Total Pax',
         // SettlementsList
-        settlements_title: 'Account Settlement',
+        settlements_title: 'Settlement',
         must_pay_to: 'Must pay to',
         receives: 'Receives',
         no_debts: 'No debts',

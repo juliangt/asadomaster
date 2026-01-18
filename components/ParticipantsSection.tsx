@@ -70,10 +70,9 @@ const ParticipantsSection: React.FC<ParticipantsSectionProps> = ({
                     </div>
                     <button
                         type="submit"
-                        className="bg-orange-600 text-white px-6 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-orange-700 transition-all shadow-md active:scale-95"
+                        className="bg-orange-600 text-white p-3 rounded-xl hover:bg-orange-700 transition-all shadow-md active:scale-95 flex items-center justify-center shrink-0"
                     >
-                        <Plus size={18} />
-                        {t('add_btn')}
+                        <Plus size={20} />
                     </button>
                 </form>
             }
