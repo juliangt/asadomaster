@@ -31,8 +31,8 @@ const HistoryView: React.FC<HistoryViewProps> = ({ history, onClearHistory, form
                         key={h.id}
                         className="bg-white p-6 rounded-2xl border border-gray-200 hover:shadow-lg transition-all transform hover:-translate-y-1"
                     >
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-5">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
+                            <div className="flex items-center gap-5 mb-4 sm:mb-0">
                                 <div className="bg-orange-50 p-4 rounded-2xl text-orange-600">
                                     <Flame size={32} />
                                 </div>
@@ -48,7 +48,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({ history, onClearHistory, form
                                     </div>
                                 </div>
                             </div>
-                            <div className="text-right">
+                            <div className="w-full sm:w-auto text-left sm:text-right">
                                 <p className="text-2xl font-black text-orange-600 tracking-tighter">{formatCurrency(h.totalCost)}</p>
                                 <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest">{t('total_spent')}</p>
                             </div>
